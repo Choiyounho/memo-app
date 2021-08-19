@@ -10,12 +10,12 @@ import com.soten.memo.data.db.entity.MemoEntity
     version = 1,
     exportSchema = false
 )
-abstract class MemoAppDatabase : RoomDatabase() {
+abstract class MemoDatabase : RoomDatabase() {
 
     abstract fun memoDao(): MemoDao
 
     companion object {
-        
+        const val DB_NAME = "memo.db"
     }
 
 }
