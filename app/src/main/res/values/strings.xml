@@ -1,6 +1,9 @@
 <resources>
-    <string name="app_name">memo</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="app_name">Memo App</string>
+    <string name="memo_list">Memo List</string>
+    <string name="memo_editor">Memo Editor</string>
+    <string name="memo_detail">Memo Detail</string>
+    <string name="title">제목</string>
+    <string name="description">내용</string>
+    <string name="add_image">Add Image</string>
 </resources>
