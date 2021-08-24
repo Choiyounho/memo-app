@@ -6,6 +6,8 @@ interface MemoRepository {
 
     suspend fun getAllMemo(): List<MemoEntity>
 
+    suspend fun getMemo(id: Int): MemoEntity?
+
     suspend fun insertMemo(memo: MemoEntity)
 
     suspend fun deleteMemo(memo:MemoEntity)

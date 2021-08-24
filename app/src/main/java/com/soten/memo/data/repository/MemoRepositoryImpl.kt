@@ -15,6 +15,10 @@ class MemoRepositoryImpl(
         memoDao.getAllMemo()
     }
 
+    override suspend fun getMemo(id: Int): MemoEntity? = withContext(ioDispatcher) {
+        memoDao.getMemo(id)
+    }
+
     override suspend fun insertMemo(memo: MemoEntity) = withContext(ioDispatcher) {
         memoDao.insertMemo(memo)
     }

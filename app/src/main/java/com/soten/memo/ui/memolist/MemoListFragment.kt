@@ -1,8 +1,8 @@
 package com.soten.memo.ui.memolist
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -10,12 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.soten.memo.R
 import com.soten.memo.adapter.MemoAdapter
+import com.soten.memo.data.CommonsConstant.MEMO_ENTITY
+import com.soten.memo.data.db.entity.MemoEntity
+import com.soten.memo.data.db.entity.MemoState
 import com.soten.memo.databinding.FragmentMemoListBinding
 import com.soten.memo.ui.MemoSharedViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MemoListFragment : Fragment() {
-
 
     private var _binding: FragmentMemoListBinding? = null
     private val binding get() = _binding!!
@@ -31,6 +33,11 @@ class MemoListFragment : Fragment() {
     ): View {
         _binding = FragmentMemoListBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
+
+        requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().finish()
+        }
+
         return binding.root
     }
 
@@ -39,30 +46,50 @@ class MemoListFragment : Fragment() {
         initView()
         bindViews()
 
-        viewModel.memoListLiveData.observe(viewLifecycleOwner) {
-            (binding.memoListRecyclerView.adapter as MemoAdapter).setMemo(it)
-        }
-
+        observeData()
     }
 
     private fun initView() {
         binding.memoEditButton.setOnClickListener {
-            findNavController().navigate(R.id.toMemoWriteFragment)
+            viewModel.setWriteSate()
         }
     }
 
     private fun bindViews() {
-        adapter = MemoAdapter {
-            Log.d("TestT", "이동")
-            val bundle = bundleOf(
-                "title" to it.title,
-                "description" to it.description
-            )
-            findNavController().navigate(R.id.toMemoDetailFragment, bundle)
+        adapter = MemoAdapter { memoEntity ->
+            viewModel.setReadState(memoEntity)
         }
         binding.memoListRecyclerView.layoutManager =
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.memoListRecyclerView.adapter = adapter
+    }
+
+    private fun observeData() {
+        viewModel.memoListLiveData.observe(viewLifecycleOwner) {
+            (binding.memoListRecyclerView.adapter as MemoAdapter).setMemo(it)
+        }
+
+        viewModel.memoStateLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is MemoState.NORMAL -> {
+                    initView()
+                    bindViews()
+                }
+                is MemoState.WRITE -> handleWriteState()
+                is MemoState.READ -> handleReadState()
+                is MemoState.SUCCESS -> {
+                    viewModel.setNormalState()
+                }
+            }
+        }
+    }
+
+    private fun handleWriteState() {
+        findNavController().navigate(R.id.toMemoWriteFragment)
+    }
+
+    private fun handleReadState() {
+        findNavController().navigate(R.id.toMemoDetailFragment)
     }
 
     override fun onDestroyView() {
@@ -78,10 +105,10 @@ class MemoListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.all_delete -> {
-                Log.d("TestT", "전체 삭제")
                 viewModel.deleteAll()
                 true
             }
             else -> false
         }
-    }
+
+}

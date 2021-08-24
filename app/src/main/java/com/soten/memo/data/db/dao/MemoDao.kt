@@ -9,6 +9,9 @@ interface MemoDao {
     @Query("SELECT * FROM memo ORDER BY updatedAt DESC")
     suspend fun getAllMemo() : List<MemoEntity>
 
+    @Query("SELECT * FROM memo WHERE memoId=:id")
+    suspend fun getMemo(id: Int): MemoEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMemo(memo: MemoEntity)
 

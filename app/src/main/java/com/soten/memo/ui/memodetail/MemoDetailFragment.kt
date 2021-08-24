@@ -3,8 +3,12 @@ package com.soten.memo.ui.memodetail
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.*
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.soten.memo.R
+import com.soten.memo.data.db.entity.MemoEntity
+import com.soten.memo.data.db.entity.MemoState
 import com.soten.memo.databinding.FragmentMemoDetailBinding
 import com.soten.memo.ui.MemoSharedViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -16,6 +20,8 @@ class MemoDetailFragment : Fragment() {
     private var _binding: FragmentMemoDetailBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var memo: MemoEntity
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -24,7 +30,9 @@ class MemoDetailFragment : Fragment() {
         _binding = FragmentMemoDetailBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
 
-
+        requireActivity().onBackPressedDispatcher.addCallback {
+            viewModel.setNormalState()
+        }
 
         return binding.root
     }
@@ -32,22 +40,38 @@ class MemoDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initViews()
+        observeData()
     }
 
-    private fun initViews() {
-        val title = arguments?.getString("title")
-        val description = arguments?.getString("description")
+    private fun observeData() {
+        viewModel.memoStateLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is MemoState.READ -> {
+                    handleReadState(state.memoEntity)
+                }
+                is MemoState.MODIFY -> {
+                    handleModifyState()
+                }
+                else -> findNavController().navigateUp()
+            }
+        }
+    }
 
+    private fun handleReadState(memoEntity: MemoEntity) {
+        memo = memoEntity
         binding.detailTitleText.apply {
             movementMethod = ScrollingMovementMethod()
-            text = title
+            text = memoEntity.title
         }
 
         binding.detailDescriptionText.apply {
             movementMethod = ScrollingMovementMethod()
-            text = description
+            text = memoEntity.description
         }
+    }
+
+    private fun handleModifyState() {
+        findNavController().navigate(R.id.toMemoEditFragment)
     }
 
     override fun onDestroyView() {
@@ -60,4 +84,16 @@ class MemoDetailFragment : Fragment() {
         inflater.inflate(R.menu.menu_detail, menu)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.menu_delete -> {
+                true
+            }
+            R.id.menu_modify -> {
+                viewModel.setModifySate(memo)
+                true
+            }
+            else -> false
+        }
 }
+
