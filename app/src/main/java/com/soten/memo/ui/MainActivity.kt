@@ -1,12 +1,11 @@
-package com.soten.memo
+package com.soten.memo.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.soten.memo.R
 import com.soten.memo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

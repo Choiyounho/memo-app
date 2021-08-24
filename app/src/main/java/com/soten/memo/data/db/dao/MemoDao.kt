@@ -7,15 +7,18 @@ import com.soten.memo.data.db.entity.MemoEntity
 interface MemoDao {
 
     @Query("SELECT * FROM memo ORDER BY updatedAt DESC")
-    fun getAllMemo() : List<MemoEntity>
+    suspend fun getAllMemo() : List<MemoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMemo(memo: MemoEntity)
+    suspend fun insertMemo(memo: MemoEntity)
 
     @Delete
-    fun deleteMemo(memo:MemoEntity)
+    suspend fun deleteMemo(memo:MemoEntity)
+
+    @Query("DELETE FROM memo")
+    suspend fun deleteAll()
 
     @Update
-    fun updateMemo(memo: MemoEntity)
+    suspend fun updateMemo(memo: MemoEntity)
 
 }

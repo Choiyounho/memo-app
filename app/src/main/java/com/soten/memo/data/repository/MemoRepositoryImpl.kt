@@ -26,5 +26,8 @@ class MemoRepositoryImpl(
     override suspend fun updateMemo(memo: MemoEntity) = withContext(ioDispatcher) {
         memoDao.updateMemo(memo)
     }
-    
+
+    override suspend fun deleteAll() {
+        memoDao.deleteAll()
+    }
 }

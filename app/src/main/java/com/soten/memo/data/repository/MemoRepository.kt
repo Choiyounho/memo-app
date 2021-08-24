@@ -12,4 +12,6 @@ interface MemoRepository {
 
     suspend fun updateMemo(memo: MemoEntity)
 
+    suspend fun deleteAll()
+
 }

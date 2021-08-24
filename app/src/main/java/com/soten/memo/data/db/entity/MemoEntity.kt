@@ -25,9 +25,9 @@ data class MemoEntity(
 //    @ColumnInfo(name = "images")
 //    var images: ArrayList<String>,
 
-    @ColumnInfo(name = "updatedAt")
-    var updatedAt: String,
+    @ColumnInfo(name = "createdAt")
+    val createdAt: String,
 
     @ColumnInfo(name = "updatedAt")
-    val createdAt: String
+    var updatedAt: String = ""
 ) : Parcelable

@@ -3,6 +3,7 @@ package com.soten.memo
 import android.app.Application
 import android.content.Context
 import com.soten.memo.di.appModule
+import com.soten.memo.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -13,7 +14,7 @@ class MemoApplication : Application() {
 
         startKoin {
             androidContext(this@MemoApplication)
-            modules(appModule)
+            modules(appModule + viewModelModule)
         }
     }
 
