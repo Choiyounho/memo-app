@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.soten.memo.data.db.entity.MemoEntity
 import com.soten.memo.databinding.ItemMemoBinding
 
-class MemoAdapter : RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
+class MemoAdapter(
+    private val memoClickedListener: (MemoEntity) -> Unit
+) : RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
 
     var memoList: List<MemoEntity> = emptyList()
 
@@ -33,11 +35,15 @@ class MemoAdapter : RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
         notifyDataSetChanged()
     }
 
-    class MemoViewHolder(private val binding: ItemMemoBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MemoViewHolder(private val binding: ItemMemoBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(memoEntity: MemoEntity) {
             binding.memoTitleText.text = memoEntity.title
             binding.memoDescriptionText.text = memoEntity.description
+
+            binding.root.setOnClickListener {
+                memoClickedListener(memoEntity)
+            }
         }
 
     }

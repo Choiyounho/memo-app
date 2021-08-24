@@ -8,8 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.soten.memo.R
 import com.soten.memo.data.db.entity.MemoEntity
 import com.soten.memo.databinding.FragmentMemoEditBinding
-import com.soten.memo.ui.memolist.MemoListViewModel
-import org.koin.android.ext.android.inject
+import com.soten.memo.ui.MemoSharedViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MemoEditFragment : Fragment() {
@@ -17,7 +16,7 @@ class MemoEditFragment : Fragment() {
     private var _binding: FragmentMemoEditBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by sharedViewModel<MemoListViewModel>()
+    private val viewModel by sharedViewModel<MemoSharedViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
