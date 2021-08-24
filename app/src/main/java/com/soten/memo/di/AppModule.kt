@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    single<MemoRepository> { MemoRepositoryImpl() }
+    single<MemoRepository> { MemoRepositoryImpl(get(), get()) }
 
     single { provideDb(androidApplication()) }
     single { provideMemoDao(get()) }
