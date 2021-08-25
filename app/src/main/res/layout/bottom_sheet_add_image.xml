@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_top_radius_white"
-    app:behavior_peekHeight="52dp"
+    app:behavior_peekHeight="60dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <TextView
@@ -13,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginTop="12dp"
+        android:layout_marginBottom="6dp"
         android:text="@string/add_image"
         android:textColor="@color/black"
         android:textSize="30sp"
@@ -30,24 +31,26 @@
         app:layout_constraintTop_toBottomOf="@id/bottomSheetText">
 
         <ImageView
+            android:id="@+id/cameraButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_baseline_photo_camera_24" />
 
         <ImageView
+            android:id="@+id/galleryButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_baseline_photo_album_24" />
 
         <ImageView
+            android:id="@+id/urlButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_baseline_link_24" />
     </LinearLayout>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/editImageRecyclerView"
