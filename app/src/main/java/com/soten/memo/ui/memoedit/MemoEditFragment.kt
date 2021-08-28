@@ -52,6 +52,7 @@ class MemoEditFragment : Fragment() {
 
             if (mediaState == MediaState.CAMERA) {
                 val cameraUrl = result.data?.extras?.get("data") as Bitmap
+                UriUtil.getImageUri(requireContext(), cameraUrl)!!
                 urlList.add(UriUtil.getImageUri(requireContext(), cameraUrl)!!)
             }
 
@@ -94,9 +95,9 @@ class MemoEditFragment : Fragment() {
         viewModel.memoStateLiveData.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is MemoState.WRITE -> initView()
-                is MemoState.MODIFY -> handleModify(state.memoEntity)
+                is MemoState.MODIFY -> handleModify()
                 is MemoState.NORMAL -> handleNormal()
-                is MemoState.SUCCESS -> handleSuccess(state.memoEntity)
+                is MemoState.SUCCESS -> handleSuccess()
                 else -> Unit
             }
         }
@@ -132,25 +133,29 @@ class MemoEditFragment : Fragment() {
     }
 
     // 수정 모드
-    private fun handleModify(memoEntity: MemoEntity) {
-        binding.editMemoTitleText.setText(memoEntity.title)
-        binding.editMemoDescriptionText.setText(memoEntity.description)
+    private fun handleModify() {
+        val memoEntity = viewModel.memoEntityLiveData.value
+        Log.d("TestT", "${memoEntity.toString()}")
+        binding.editMemoTitleText.setText(memoEntity?.title)
+        binding.editMemoDescriptionText.setText(memoEntity?.description)
 
         binding.submitButton.setOnClickListener {
             val updateAt = SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(Date())
-            val memo = MemoEntity(
-                id = memoEntity.id,
+
+            val memoLiveData = MemoEntity(
+                id = memoEntity?.id,
                 title = binding.editMemoTitleText.text.toString(),
                 description = binding.editMemoDescriptionText.text.toString(),
-                createdAt = memoEntity.createdAt,
+                createdAt = memoEntity!!.createdAt,
                 updatedAt = updateAt
             )
-            viewModel.setSuccess(memo)
+            viewModel.setMemoEntity(memoLiveData)
+            viewModel.updateMemo(memoLiveData)
+            viewModel.setSuccess()
         }
     }
 
-    private fun handleSuccess(memoEntity: MemoEntity) {
-        viewModel.updateMemo(memoEntity)
+    private fun handleSuccess() {
         findNavController().navigateUp()
     }
 

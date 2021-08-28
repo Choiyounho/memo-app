@@ -6,16 +6,10 @@ sealed class MemoState {
 
     object WRITE: MemoState()
 
-    data class READ(
-        val memoEntity: MemoEntity
-    ): MemoState()
+    object READ: MemoState()
 
-    data class MODIFY(
-        val memoEntity: MemoEntity
-    ): MemoState()
+    object MODIFY: MemoState()
 
-    data class SUCCESS(
-        val memoEntity: MemoEntity
-    ): MemoState()
+    object SUCCESS: MemoState()
 
 }

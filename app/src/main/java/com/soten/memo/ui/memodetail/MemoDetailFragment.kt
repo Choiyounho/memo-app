@@ -20,8 +20,6 @@ class MemoDetailFragment : Fragment() {
     private var _binding: FragmentMemoDetailBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var memo: MemoEntity
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,30 +45,40 @@ class MemoDetailFragment : Fragment() {
         viewModel.memoStateLiveData.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is MemoState.READ -> {
-                    handleReadState(state.memoEntity)
+                    handleReadState()
                 }
                 is MemoState.MODIFY -> {
                     handleModifyState()
                 }
-                else -> findNavController().navigateUp()
+                else -> findNavController().navigateUp().run {
+                    viewModel.setNormalState()
+                }
             }
         }
     }
 
-    private fun handleReadState(memoEntity: MemoEntity) {
-        memo = memoEntity
+    private fun handleReadState() {
+        val memoEntity = viewModel.memoEntityLiveData.value
         binding.detailTitleText.apply {
             movementMethod = ScrollingMovementMethod()
-            text = memoEntity.title
+            text = memoEntity?.title
         }
 
         binding.detailDescriptionText.apply {
             movementMethod = ScrollingMovementMethod()
-            text = memoEntity.description
+            text = memoEntity?.description
         }
     }
 
     private fun handleModifyState() {
+        viewModel.setMemoEntity(
+            MemoEntity(
+                id = viewModel.memoEntityLiveData.value?.id,
+                title = binding.detailTitleText.text.toString(),
+                description = binding.detailDescriptionText.text.toString(),
+                createdAt = viewModel.memoEntityLiveData.value?.createdAt!!,
+            )
+        )
         findNavController().navigate(R.id.toMemoEditFragment)
     }
 
@@ -90,7 +98,7 @@ class MemoDetailFragment : Fragment() {
                 true
             }
             R.id.menu_modify -> {
-                viewModel.setModifySate(memo)
+                viewModel.setModifySate()
                 true
             }
             else -> false

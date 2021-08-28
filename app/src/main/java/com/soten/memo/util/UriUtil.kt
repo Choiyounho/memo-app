@@ -10,7 +10,7 @@ object UriUtil {
 
     fun getImageUri(context: Context, inImage: Bitmap): Uri? {
         val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes)
         val path = MediaStore.Images.Media.insertImage(
             context.contentResolver,
             inImage,

@@ -1,7 +1,10 @@
 package com.soten.memo.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -19,6 +22,20 @@ class MainActivity : AppCompatActivity() {
 
         initNavigation()
         bindViews()
+
+        requestLocationPermission()
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
+            ),
+            REQUEST_NEED_PERMISSIONS
+        )
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -46,6 +63,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val REQUEST_NEED_PERMISSIONS = 101
     }
 
 }

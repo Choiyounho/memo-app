@@ -18,7 +18,6 @@ val appModule = module {
     single { Dispatchers.Main }
 
     factory { GetAllMemoListUseCase(get()) }
-    factory { GetMemoUseCase(get()) }
     factory { InsertMemoUseCase(get()) }
     factory { DeleteAllMemoUseCase(get()) }
     factory { UpdateMemoUseCase(get()) }
