@@ -22,7 +22,6 @@ class AddUrlFragment : DialogFragment(R.layout.fragment_add_url) {
                 "requestKey",
                 bundleOf("requestKey" to binding.inputUrl.text.toString())
             )
-
             dismiss()
         }
     }

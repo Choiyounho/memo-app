@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
 
-    viewModel { MemoSharedViewModel(get(), get(), get(), get()) }
+    viewModel { MemoSharedViewModel(get(), get(), get(), get(), get()) }
 
 }
