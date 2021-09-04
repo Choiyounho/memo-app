@@ -7,7 +7,7 @@ import com.soten.memo.data.db.entity.MemoEntity
 
 @Database(
     entities = [MemoEntity::class],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 abstract class MemoDatabase : RoomDatabase() {

@@ -1,12 +1,13 @@
-package com.soten.memo
+package com.soten.memo.ui
 
+import android.Manifest
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import androidx.core.app.ActivityCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.soten.memo.R
 import com.soten.memo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,20 @@ class MainActivity : AppCompatActivity() {
 
         initNavigation()
         bindViews()
+
+        requestPermission()
+    }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
+            ),
+            REQUEST_NEED_PERMISSIONS,
+        )
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -30,7 +45,8 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.memoListFragment,
-                R.id.memoEditFragment
+                R.id.memoEditFragment,
+                R.id.memoDetailFragment,
             )
         )
         setSupportActionBar(binding.toolbar)
@@ -48,4 +64,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    companion object {
+        private const val REQUEST_NEED_PERMISSIONS = 101
+    }
+
 }

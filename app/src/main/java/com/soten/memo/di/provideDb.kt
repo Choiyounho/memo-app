@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.soten.memo.data.db.MemoDatabase
 
 fun provideDb(context: Context): MemoDatabase =
-    Room.databaseBuilder(context, MemoDatabase::class.java, MemoDatabase.DB_NAME).build()
+    Room.databaseBuilder(context, MemoDatabase::class.java, MemoDatabase.DB_NAME)
+        .fallbackToDestructiveMigration().build()
 
 fun provideMemoDao(memoDatabase: MemoDatabase) = memoDatabase.memoDao()
