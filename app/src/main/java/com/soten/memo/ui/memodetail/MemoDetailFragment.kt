@@ -24,7 +24,7 @@ class MemoDetailFragment : Fragment() {
     private var _binding: FragmentMemoDetailBinding? = null
     private val binding get() = _binding!!
 
-    private val adapter by lazy { PhotoAdapter { _ -> } }
+    private val adapter by lazy { PhotoAdapter { } }
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -4,8 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
+import android.graphics.drawable.Drawable
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
@@ -23,13 +22,18 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.soten.memo.BuildConfig
 import com.soten.memo.MemoApplication.Companion.appContext
+import com.soten.memo.R
 import com.soten.memo.adapter.PhotoAdapter
 import com.soten.memo.data.db.entity.MemoEntity
 import com.soten.memo.data.db.entity.MemoState
 import com.soten.memo.databinding.FragmentMemoEditBinding
 import com.soten.memo.ui.MemoSharedViewModel
+import com.soten.memo.util.CameraUtil
 import com.soten.memo.util.PathUtil
 import com.soten.memo.util.addImage
 import com.soten.memo.util.removeImage
@@ -62,9 +66,9 @@ class MemoEditFragment : Fragment() {
             }
 
             if (mediaState == MediaState.GALLERY) {
-                val galleryUrl = result.data?.data as Uri
+                val galleryUri = result.data?.data as Uri
                 createImageFile()
-                val filePath = PathUtil.getPath(requireContext(), galleryUrl)
+                val filePath = PathUtil.getPath(requireContext(), galleryUri)
                 val newFile = File(currentPhotoPath)
                 FileOutputStream(newFile).apply {
                     this.write(File(filePath!!).readBytes())
@@ -82,11 +86,10 @@ class MemoEditFragment : Fragment() {
                     val exif = ExifInterface(currentPhotoPath)
                     val exifOrient: Int = exif.getAttributeInt(
                         ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-                    val exifDegree = exifOrientationToDegrees(exifOrient)
-                    bitmap = rotate(bitmap, exifDegree)
+                    val exifDegree = CameraUtil.exifOrientationToDegrees(exifOrient)
+                    bitmap = CameraUtil.rotate(bitmap, exifDegree)
+                    getImageUri(appContext, bitmap) // 찍은 사진 앨범 저장 기능
 
-//                    val fileUri = getImageUri(appContext, bitmap)
-//                    val path = PathUtil.getPath(appContext!!, fileUri!!)
                     viewModel.imagePathLiveData.addImage(currentPhotoPath)
                 } catch (e: Exception) {
                     Log.d(TAG, e.message!!)
@@ -104,22 +107,59 @@ class MemoEditFragment : Fragment() {
         _binding = FragmentMemoEditBinding.inflate(inflater, container, false)
 
         requireActivity().onBackPressedDispatcher.addCallback {
-            viewModel.setNormalState()
+            Toast.makeText(appContext, "submit 버튼을 눌러주세요", Toast.LENGTH_SHORT).show()
         }
 
         setFragmentResultListener("requestKey") { _, bundle ->
-            val text = bundle.getString("requestKey")
+            val urlLink = bundle.getString("requestKey")
 
-            createImageFile()
+            var imageUri: Uri?
+            var path: String? = ""
+            var isFail = false
 
-            val filePath = PathUtil.getPath(requireContext(), Uri.parse(text))
-            val newFile = File(currentPhotoPath) //새로 만든 어플 내 파일
-            val outputStream = FileOutputStream(newFile)
-            outputStream.write(File(filePath).readBytes())
-            outputStream.close()
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.progressBar.visibility = View.VISIBLE
+                withContext(Dispatchers.IO) {
+                    Glide.with(appContext!!)
+                        .asBitmap()
+                        .load(Uri.parse(urlLink))
+                        .into(object : CustomTarget<Bitmap>() {
+                            override fun onResourceReady(
+                                resource: Bitmap,
+                                transition: Transition<in Bitmap>?,
+                            ) {
+                                imageUri = getImageUri(appContext, resource)
+                                path = PathUtil.getPath(appContext!!, imageUri!!)
 
+                                path?.let {
+                                    viewModel.imagePathLiveData.addImage(it)
+                                }
+                            }
+
+                            override fun onLoadCleared(placeholder: Drawable?) {
+                                isFail = true
+                                Toast.makeText(appContext, "url 받아오기 실패", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                }
+                delay(1000L)
+
+                if (isFail) {
+                    return@launch
+                }
+                binding.progressBar.visibility = View.GONE
+                photoAdapter.setImages(viewModel.imagePathLiveData.value!!)
+
+                withContext(Dispatchers.IO) {
+                    createImageFile()
+                    val newFile = File(currentPhotoPath)
+                    FileOutputStream(newFile).apply {
+                        this.write(File(path!!).readBytes())
+                        this.close()
+                    }
+                }
+            }
         }
-
         return binding.root
     }
 
@@ -217,12 +257,11 @@ class MemoEditFragment : Fragment() {
                 images = viewModel.imagePathLiveData.value ?: listOf()
             )
         )
-
     }
 
     private fun handleNormal() {
         hideKeyboard()
-        findNavController().navigateUp()
+        findNavController().navigate(R.id.to_memoListFragment)
     }
 
     private fun hideKeyboard() {
@@ -241,7 +280,7 @@ class MemoEditFragment : Fragment() {
     private lateinit var currentPhotoPath: String
     private lateinit var currentPhotoName: String
 
-    @Throws(IOException::class)
+    @Throws(Exception::class)
     private fun createImageFile(): File {
         val timeStamp: String =
             SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
@@ -278,46 +317,17 @@ class MemoEditFragment : Fragment() {
         }
     }
 
+
     private fun getImageUri(context: Context?, bitmap: Bitmap?): Uri? {
         val bytes = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(context?.contentResolver,
+        val timeStamp: String =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val urlPath = MediaStore.Images.Media.insertImage(context?.contentResolver,
             bitmap,
-            currentPhotoPath,
+            timeStamp,
             null)
-        return Uri.parse(path)
-    }
-
-    private fun rotate(bitmap: Bitmap?, degrees: Int): Bitmap? {
-        var rotateBitmap = bitmap
-        if (degrees != 0 && rotateBitmap != null) {
-            val matrix = Matrix()
-            matrix.setRotate(degrees.toFloat(), rotateBitmap.width.toFloat() / 2,
-                rotateBitmap.height.toFloat() / 2)
-            try {
-                val converted = Bitmap.createBitmap(rotateBitmap, 0, 0,
-                    rotateBitmap.width, rotateBitmap.height, matrix, true)
-                if (rotateBitmap != converted) {
-                    rotateBitmap.recycle()
-                    rotateBitmap = converted
-                    val options = BitmapFactory.Options()
-                    options.inSampleSize = 4
-                    rotateBitmap = Bitmap.createScaledBitmap(rotateBitmap, 1280, 1280, true)
-                }
-            } catch (ex: OutOfMemoryError) {
-                Toast.makeText(appContext, "사진 회전 실패...", Toast.LENGTH_SHORT).show()
-            }
-        }
-        return rotateBitmap
-    }
-
-    private fun exifOrientationToDegrees(exifOrientation: Int): Int {
-        return when (exifOrientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> 90
-            ExifInterface.ORIENTATION_ROTATE_180 -> 180
-            ExifInterface.ORIENTATION_ROTATE_270 -> 270
-            else -> 0
-        }
+        return Uri.parse(urlPath)
     }
 
     companion object {

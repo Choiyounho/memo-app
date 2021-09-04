@@ -30,6 +30,7 @@ class MemoSharedViewModel(
 
     init {
         fetch()
+        _imagePathLiveData.value = arrayListOf()
     }
 
     private fun fetch() = viewModelScope.launch {
