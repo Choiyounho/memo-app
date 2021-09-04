@@ -8,14 +8,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.soten.memo.data.db.entity.MemoState
 import com.soten.memo.databinding.ItemPhotoBinding
+import java.io.File
 
-class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.MainViewHolder>() {
+class PhotoAdapter(
+    private val removePhotoListener: (String) -> Unit
+) : RecyclerView.Adapter<PhotoAdapter.MainViewHolder>() {
 
     var memoState: MemoState? = MemoState.WRITE
 
-    private val items = ArrayList<Uri>()
+    private val items = ArrayList<String>()
 
-    fun setImages(mediaList: List<Uri>) {
+    fun setImages(mediaList: List<String>) {
         items.clear()
         items.addAll(mediaList)
         notifyDataSetChanged()
@@ -28,6 +31,7 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.MainViewHolder>() {
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         holder.setImage(items[position])
+        holder.removeImage(items[position])
     }
 
     override fun getItemCount(): Int = items.size
@@ -35,11 +39,20 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.MainViewHolder>() {
     inner class MainViewHolder(private val binding: ItemPhotoBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun setImage(media: Uri) {
-            Glide.with(binding.photo).load(media.toString()).into(binding.photo)
+        fun setImage(path: String) {
+//            Glide.with(binding.photo).load(Uri.fromFile(File(path)).into(binding.photo)
+            binding.photo.setImageURI(Uri.parse(path))
 
             if (memoState == MemoState.WRITE) {
                 binding.removeButton.visibility = View.VISIBLE
+            } else {
+                binding.removeButton.visibility = View.GONE
+            }
+        }
+
+        fun removeImage(path: String) {
+            binding.removeButton.setOnClickListener {
+                removePhotoListener(path)
             }
         }
     }
