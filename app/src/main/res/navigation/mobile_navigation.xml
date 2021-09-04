@@ -45,9 +45,9 @@
         tools:layout="@layout/fragment_memo_edit" >
         <action
             android:id="@+id/to_memoListFragment"
-            app:popUpTo="@id/memoListFragment"
-            app:popUpToInclusive="true"
-            app:destination="@id/memoListFragment" />
+            app:destination="@id/memoListFragment"
+            app:popUpTo="@id/mobile_navigation"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>
