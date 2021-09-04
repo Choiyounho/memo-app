@@ -1,7 +1,6 @@
 package com.soten.memo.ui
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,10 +22,10 @@ class MainActivity : AppCompatActivity() {
         initNavigation()
         bindViews()
 
-        requestLocationPermission()
+        requestPermission()
     }
 
-    private fun requestLocationPermission() {
+    private fun requestPermission() {
         ActivityCompat.requestPermissions(
             this,
             arrayOf(
@@ -34,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA
             ),
-            REQUEST_NEED_PERMISSIONS
+            REQUEST_NEED_PERMISSIONS,
         )
     }
 
@@ -46,7 +45,8 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.memoListFragment,
-                R.id.memoEditFragment
+                R.id.memoEditFragment,
+                R.id.memoDetailFragment,
             )
         )
         setSupportActionBar(binding.toolbar)
