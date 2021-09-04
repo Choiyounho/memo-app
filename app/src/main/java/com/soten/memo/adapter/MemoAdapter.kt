@@ -1,5 +1,6 @@
 package com.soten.memo.adapter
 
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -43,6 +44,10 @@ class MemoAdapter(
 
             binding.root.setOnClickListener {
                 memoClickedListener(memoEntity)
+            }
+
+            if (memoEntity.images.isNotEmpty()) {
+                binding.memoThumbnailImage.setImageURI(Uri.parse(memoEntity.images.first()))
             }
         }
 
