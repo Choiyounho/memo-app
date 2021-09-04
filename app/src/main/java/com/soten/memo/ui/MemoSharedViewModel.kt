@@ -12,7 +12,8 @@ class MemoSharedViewModel(
     private val deleteAllMemoUseCase: DeleteAllMemoUseCase,
     private val getAllMemoListUseCase: GetAllMemoListUseCase,
     private val insertMemoUseCase: InsertMemoUseCase,
-    private val updateMemoUseCase: UpdateMemoUseCase
+    private val updateMemoUseCase: UpdateMemoUseCase,
+    private val deleteMemoUseCase: DeleteMemoUseCase,
 ) : ViewModel() {
 
     private val _memoListLiveData = MutableLiveData<List<MemoEntity>>()
@@ -24,12 +25,16 @@ class MemoSharedViewModel(
     private val _memoEntityLiveData = MutableLiveData<MemoEntity?>()
     val memoEntityLiveData get() = _memoEntityLiveData
 
+    private val _imagePathLiveData = MutableLiveData<ArrayList<String>>()
+    val imagePathLiveData get() = _imagePathLiveData
+
     init {
         fetch()
     }
 
-    fun fetch() = viewModelScope.launch {
-        _memoListLiveData.value = getAllMemoListUseCase()
+    private fun fetch() = viewModelScope.launch {
+        _memoListLiveData.value = getAllMemoListUseCase() ?: listOf()
+        _imagePathLiveData.value?.clear()
     }
 
     fun insertMemo(memoEntity: MemoEntity) = viewModelScope.launch {
@@ -65,6 +70,10 @@ class MemoSharedViewModel(
     fun updateMemo(memoEntity: MemoEntity) = viewModelScope.launch {
         updateMemoUseCase(memoEntity)
         fetch()
+    }
+
+    fun delete(memoEntity: MemoEntity) = viewModelScope.launch {
+        deleteMemoUseCase(memoEntity)
     }
 
     fun deleteAll() = viewModelScope.launch {

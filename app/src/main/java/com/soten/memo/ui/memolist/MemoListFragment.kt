@@ -3,14 +3,12 @@ package com.soten.memo.ui.memolist
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.soten.memo.R
 import com.soten.memo.adapter.MemoAdapter
-import com.soten.memo.data.db.entity.MemoEntity
 import com.soten.memo.data.db.entity.MemoState
 import com.soten.memo.databinding.FragmentMemoListBinding
 import com.soten.memo.ui.MemoSharedViewModel

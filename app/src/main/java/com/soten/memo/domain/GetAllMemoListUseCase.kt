@@ -7,7 +7,7 @@ class GetAllMemoListUseCase(
     private val memoRepository: MemoRepository
 ) {
 
-    suspend operator fun invoke(): List<MemoEntity> {
+    suspend operator fun invoke(): List<MemoEntity>? {
         return memoRepository.getAllMemo()
     }
 
