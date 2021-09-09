@@ -99,6 +99,7 @@ class MemoEditFragment : Fragment() {
             photoAdapter.setImages(viewModel.imagePathLiveData.value ?: listOf())
         }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -113,53 +114,41 @@ class MemoEditFragment : Fragment() {
         setFragmentResultListener("requestKey") { _, bundle ->
             val urlLink = bundle.getString("requestKey")
 
-            var imageUri: Uri?
+            binding.progressBar.visibility = View.VISIBLE
             var path: String? = ""
-            var isFail = false
 
-            CoroutineScope(Dispatchers.Main).launch {
-                binding.progressBar.visibility = View.VISIBLE
-                withContext(Dispatchers.IO) {
-                    Glide.with(appContext!!)
-                        .asBitmap()
-                        .load(Uri.parse(urlLink))
-                        .into(object : CustomTarget<Bitmap>() {
-                            override fun onResourceReady(
-                                resource: Bitmap,
-                                transition: Transition<in Bitmap>?,
-                            ) {
-                                imageUri = getImageUri(appContext, resource)
-                                path = PathUtil.getPath(appContext!!, imageUri!!)
+            Glide.with(appContext!!)
+                .asBitmap()
+                .load(Uri.parse(urlLink))
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?,
+                    ) {
+                        val imageUri = getImageUri(appContext, resource)
+                        path = PathUtil.getPath(appContext!!, imageUri!!)
 
-                                path?.let {
-                                    viewModel.imagePathLiveData.addImage(it)
-                                }
-                            }
+                        path?.let {
+                            viewModel.imagePathLiveData.addImage(it)
+                        }
 
-                            override fun onLoadCleared(placeholder: Drawable?) {
-                                isFail = true
-                                Toast.makeText(appContext, "url 받아오기 실패", Toast.LENGTH_SHORT).show()
-                            }
-                        })
-                }
-                delay(1000L)
+                        createImageFile()
+                        val newFile = File(currentPhotoPath)
+                        FileOutputStream(newFile).apply {
+                            this.write(File(path!!).readBytes())
+                            this.close()
+                        }
 
-                if (isFail) {
-                    return@launch
-                }
-                binding.progressBar.visibility = View.GONE
-                photoAdapter.setImages(viewModel.imagePathLiveData.value!!)
-
-                withContext(Dispatchers.IO) {
-                    createImageFile()
-                    val newFile = File(currentPhotoPath)
-                    FileOutputStream(newFile).apply {
-                        this.write(File(path!!).readBytes())
-                        this.close()
+                        binding.progressBar.visibility = View.GONE
+                        photoAdapter.setImages(viewModel.imagePathLiveData.value!!)
                     }
-                }
-            }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        Toast.makeText(appContext, "url 받아오기 실패", Toast.LENGTH_SHORT).show()
+                    }
+                })
         }
+
         return binding.root
     }
 
@@ -211,6 +200,9 @@ class MemoEditFragment : Fragment() {
     // 수정 모드
     private fun handleModify() {
         val memoEntity = viewModel.memoEntityLiveData.value
+        Log.d(TAG, memoEntity?.images.toString())
+
+        viewModel.setImagePathLiveData(memoEntity?.images ?: arrayListOf())
 
         try {
             photoAdapter.setImages(memoEntity?.images ?: listOf())
@@ -274,6 +266,7 @@ class MemoEditFragment : Fragment() {
         viewModel.imagePathLiveData.removeImage(path)
         val file = File(path)
         file.delete()
+
         photoAdapter.setImages(viewModel.imagePathLiveData.value ?: listOf())
     }
 
