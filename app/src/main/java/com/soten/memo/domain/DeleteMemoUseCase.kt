@@ -9,7 +9,9 @@ class DeleteMemoUseCase(
 ) {
 
     suspend operator fun invoke(memoEntity: MemoEntity) {
-        memoEntity.images.forEach { path ->
+        val images = ArrayList<String>()
+        images.addAll(memoEntity.images)
+        images.forEach { path ->
             val file = File(path)
             file.delete()
         }
