@@ -69,7 +69,7 @@ class MemoSharedViewModel(
     }
 
     fun setImagePathLiveData(images: List<String>) = viewModelScope.launch {
-        _imagePathLiveData.value = images as ArrayList<String>
+        _imagePathLiveData.value = images as? ArrayList<String>
     }
 
     fun updateMemo(memoEntity: MemoEntity) = viewModelScope.launch {
