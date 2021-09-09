@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.soten.memo.data.db.entity.MemoState
 import com.soten.memo.databinding.ItemPhotoBinding
-import java.io.File
 
 class PhotoAdapter(
     private val removePhotoListener: (String) -> Unit
@@ -40,7 +38,6 @@ class PhotoAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun setImage(path: String) {
-//            Glide.with(binding.photo).load(Uri.fromFile(File(path)).into(binding.photo)
             binding.photo.setImageURI(Uri.parse(path))
 
             if (memoState == MemoState.WRITE) {

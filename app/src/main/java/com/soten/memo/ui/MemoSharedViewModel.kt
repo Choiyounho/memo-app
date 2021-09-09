@@ -33,7 +33,7 @@ class MemoSharedViewModel(
         _imagePathLiveData.value = arrayListOf()
     }
 
-    private fun fetch() = viewModelScope.launch {
+    fun fetch() = viewModelScope.launch {
         _memoListLiveData.value = getAllMemoListUseCase() ?: listOf()
         _imagePathLiveData.value?.clear()
     }
@@ -66,6 +66,10 @@ class MemoSharedViewModel(
 
     fun setSuccess() = viewModelScope.launch {
         _memoStateLiveData.value = MemoState.SUCCESS
+    }
+
+    fun setImagePathLiveData(images: List<String>) = viewModelScope.launch {
+        _imagePathLiveData.value = images as ArrayList<String>
     }
 
     fun updateMemo(memoEntity: MemoEntity) = viewModelScope.launch {
