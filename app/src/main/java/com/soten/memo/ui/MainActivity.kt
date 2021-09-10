@@ -9,11 +9,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.soten.memo.R
 import com.soten.memo.databinding.ActivityMainBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val navController by lazy { findNavController(R.id.nav_host_fragment_activity_main) }
+
+    private val viewModel by viewModel<MemoSharedViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +49,6 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.memoListFragment,
                 R.id.memoEditFragment,
-                R.id.memoDetailFragment,
             )
         )
         setSupportActionBar(binding.toolbar)
@@ -61,6 +63,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.memoEditFragment -> {
                     title = getString(R.string.memo_editor)
                 }
+            }
+        }
+
+        binding.toolbar.setNavigationOnClickListener {
+            it.setOnClickListener {
+                viewModel.setNormalState()
             }
         }
     }
