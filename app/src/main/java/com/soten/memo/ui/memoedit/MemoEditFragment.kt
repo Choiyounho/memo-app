@@ -202,7 +202,7 @@ class MemoEditFragment : Fragment() {
         val memoEntity = viewModel.memoEntityLiveData.value
         Log.d(TAG, memoEntity?.images.toString())
 
-        viewModel.setImagePathLiveData(memoEntity?.images ?: arrayListOf())
+        viewModel.setImagePathLiveData(memoEntity?.images ?: emptyList())
 
         try {
             photoAdapter.setImages(memoEntity?.images ?: listOf())
