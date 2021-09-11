@@ -11,7 +11,6 @@
  - Navigation
  - Coroutine
  - Koin
- - Retrofit2
  - Glide
  - Gson
 

@@ -7,7 +7,7 @@ import com.soten.memo.data.db.entity.MemoEntity
 interface MemoDao {
 
     @Query("SELECT * FROM memo ORDER BY updatedAt DESC")
-    suspend fun getAllMemo() : List<MemoEntity>
+    suspend fun getAllMemo(): List<MemoEntity>
 
     @Query("SELECT * FROM memo WHERE memoId=:id")
     suspend fun getMemo(id: Int): MemoEntity?
@@ -16,7 +16,7 @@ interface MemoDao {
     suspend fun insertMemo(memo: MemoEntity)
 
     @Delete
-    suspend fun deleteMemo(memo:MemoEntity)
+    suspend fun deleteMemo(memo: MemoEntity)
 
     @Query("DELETE FROM memo")
     suspend fun deleteAll()
