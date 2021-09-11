@@ -1,15 +1,16 @@
 package com.soten.memo.adapter
 
-import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.soten.memo.R
 import com.soten.memo.data.db.entity.MemoEntity
 import com.soten.memo.databinding.ItemMemoBinding
+import java.io.File
 
 class MemoAdapter(
-    private val memoClickedListener: (MemoEntity) -> Unit
+    private val memoClickedListener: (MemoEntity) -> Unit,
 ) : RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
 
     var memoList: List<MemoEntity> = emptyList()
@@ -32,11 +33,11 @@ class MemoAdapter(
 
     fun setMemo(memoList: List<MemoEntity>) {
         this.memoList = memoList
-        Log.d("ASDF", "when")
         notifyDataSetChanged()
     }
 
-    inner class MemoViewHolder(private val binding: ItemMemoBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MemoViewHolder(private val binding: ItemMemoBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(memoEntity: MemoEntity) {
             binding.memoTitleText.text = memoEntity.title
@@ -47,7 +48,14 @@ class MemoAdapter(
             }
 
             if (memoEntity.images.isNotEmpty()) {
-                binding.memoThumbnailImage.setImageURI(Uri.parse(memoEntity.images.first()))
+                Glide.with(binding.root.context)
+                    .load(File(memoEntity.images.first()))
+                    .thumbnail(
+                        Glide.with(binding.root.context)
+                            .load(R.drawable.loading)
+                    )
+                    .error(R.drawable.ic_fail)
+                    .into(binding.memoThumbnailImage)
             }
         }
 

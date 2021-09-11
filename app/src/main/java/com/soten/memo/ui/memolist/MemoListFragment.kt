@@ -32,17 +32,16 @@ class MemoListFragment : Fragment() {
     ): View {
         _binding = FragmentMemoListBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
+
         requireActivity().onBackPressedDispatcher.addCallback {
             requireActivity().finish()
         }
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
-        bindViews()
-
         observeData()
     }
 
@@ -70,19 +69,19 @@ class MemoListFragment : Fragment() {
         viewModel.memoStateLiveData.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is MemoState.NORMAL -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    initView()
-                    bindViews()
-                    binding.progressBar.visibility = View.GONE
+                    handleNomalState()
                 }
                 is MemoState.WRITE -> handleWriteState()
                 is MemoState.READ -> handleReadState()
-                is MemoState.SUCCESS -> {
-                    viewModel.setNormalState()
-                }
+                is MemoState.SUCCESS -> viewModel.setNormalState()
                 else -> Unit
             }
         }
+    }
+
+    private fun handleNomalState() {
+        initView()
+        bindViews()
     }
 
     private fun handleWriteState() {
