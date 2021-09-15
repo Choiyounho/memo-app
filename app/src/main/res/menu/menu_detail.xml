@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="삭제"
+    <item android:title="@string/delete"
         android:id="@+id/menu_delete"/>
     <item
         android:icon="@drawable/ic_edit"
-        android:title="수정"
+        android:title="@string/modify"
         android:id="@+id/menu_modify"
         app:showAsAction="ifRoom" />
 
