@@ -3,15 +3,12 @@ package com.soten.memo.ui
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.filters.LargeTest
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.AndroidJUnit4
 import com.soten.memo.R
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -24,7 +21,7 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4ClassRunner::class)
-class DeleteMemoTest {
+class FailUrlDownloadTest {
 
     @Rule
     @JvmField
@@ -42,52 +39,36 @@ class DeleteMemoTest {
                 isDisplayed()))
         floatingActionButton.perform(click())
 
-        val appCompatEditText = onView(
-            allOf(withId(R.id.editMemoTitleText),
+        val appCompatImageView = onView(
+            allOf(withId(R.id.urlButton),
                 childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment_activity_main),
-                        0),
-                    0),
-                isDisplayed()))
-        appCompatEditText.perform(replaceText("title"), closeSoftKeyboard())
-
-        val materialButton = onView(
-            allOf(withId(R.id.submitButton), withText("submit"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment_activity_main),
-                        0),
+                    allOf(withId(R.id.buttonContainer),
+                        childAtPosition(
+                            withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
+                            4)),
                     2),
                 isDisplayed()))
-        materialButton.perform(click())
+        appCompatImageView.perform(click())
 
-        val recyclerView = onView(
-            allOf(withId(R.id.memoListRecyclerView),
-                childAtPosition(
-                    withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
-                    0)))
-        recyclerView.perform(actionOnItemAtPosition<ViewHolder>(0, click()))
-
-        val overflowMenuButton = onView(
-            allOf(withContentDescription("옵션 더보기"),
+        val appCompatEditText = onView(
+            allOf(withId(R.id.inputUrl),
                 childAtPosition(
                     childAtPosition(
-                        withId(R.id.toolbar),
-                        1),
-                    1),
-                isDisplayed()))
-        overflowMenuButton.perform(click())
-
-        val materialTextView2 = onView(
-            allOf(withId(R.id.title), withText("delete"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.content),
+                        withId(android.R.id.content),
                         0),
                     0),
                 isDisplayed()))
-        materialTextView2.perform(click())
+        appCompatEditText.perform(replaceText("url fail"), closeSoftKeyboard())
+
+        val materialButton = onView(
+            allOf(withId(R.id.addUrlButton), withText("Add Url"),
+                childAtPosition(
+                    childAtPosition(
+                        withId(android.R.id.content),
+                        0),
+                    1),
+                isDisplayed()))
+        materialButton.perform(click())
     }
 
     private fun childAtPosition(

@@ -172,9 +172,9 @@ class MemoEditFragment : Fragment() {
     }
 
     private fun addMediaSource() {
-        binding.bottomSheet.editImageRecyclerView.adapter = photoAdapter
+        binding.editImageRecyclerView.adapter = photoAdapter
 
-        binding.bottomSheet.galleryButton.setOnClickListener {
+        binding.galleryButton.setOnClickListener {
             val intent = Intent().apply {
                 type = "image/*"
                 action = Intent.ACTION_GET_CONTENT
@@ -183,12 +183,12 @@ class MemoEditFragment : Fragment() {
             launcher.launch(intent)
         }
 
-        binding.bottomSheet.cameraButton.setOnClickListener {
+        binding.cameraButton.setOnClickListener {
             mediaState = MediaState.CAMERA
             takePictureIntent()
         }
 
-        binding.bottomSheet.urlButton.setOnClickListener {
+        binding.urlButton.setOnClickListener {
             AddUrlFragment().show(parentFragmentManager, "link")
         }
     }
