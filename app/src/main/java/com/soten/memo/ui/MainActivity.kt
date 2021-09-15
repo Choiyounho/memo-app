@@ -60,9 +60,7 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.memoListFragment -> title = getString(R.string.memo_list)
                 R.id.memoDetailFragment -> title = getString(R.string.memo_detail)
-                R.id.memoEditFragment -> {
-                    title = getString(R.string.memo_editor)
-                }
+                R.id.memoEditFragment -> title = getString(R.string.memo_editor)
             }
         }
 

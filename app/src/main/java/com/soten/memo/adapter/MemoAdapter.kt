@@ -2,6 +2,8 @@ package com.soten.memo.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.soten.memo.R
@@ -9,11 +11,9 @@ import com.soten.memo.data.db.entity.MemoEntity
 import com.soten.memo.databinding.ItemMemoBinding
 import java.io.File
 
-class MemoAdapter(
-    private val memoClickedListener: (MemoEntity) -> Unit,
-) : RecyclerView.Adapter<MemoAdapter.MemoViewHolder>() {
-
-    var memoList: List<MemoEntity> = emptyList()
+class MemoAdapter
+    (private val memoClickedListener: (MemoEntity) -> Unit) :
+    ListAdapter<MemoEntity, MemoAdapter.MemoViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoViewHolder {
         return MemoViewHolder(
@@ -26,14 +26,7 @@ class MemoAdapter(
     }
 
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
-        holder.bind(memoList[position])
-    }
-
-    override fun getItemCount(): Int = memoList.size
-
-    fun setMemo(memoList: List<MemoEntity>) {
-        this.memoList = memoList
-        notifyDataSetChanged()
+        holder.bind(currentList[position])
     }
 
     inner class MemoViewHolder(private val binding: ItemMemoBinding) :
@@ -60,4 +53,17 @@ class MemoAdapter(
         }
 
     }
+
+    companion object {
+        val diffUtil = object : DiffUtil.ItemCallback<MemoEntity>() {
+            override fun areItemsTheSame(oldItem: MemoEntity, newItem: MemoEntity): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: MemoEntity, newItem: MemoEntity): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
+
 }

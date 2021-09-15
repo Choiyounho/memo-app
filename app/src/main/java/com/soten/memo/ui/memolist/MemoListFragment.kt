@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +12,6 @@ import com.soten.memo.adapter.MemoAdapter
 import com.soten.memo.data.db.entity.MemoState
 import com.soten.memo.databinding.FragmentMemoListBinding
 import com.soten.memo.ui.MemoSharedViewModel
-import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MemoListFragment : Fragment() {
@@ -23,7 +21,12 @@ class MemoListFragment : Fragment() {
 
     private val viewModel by sharedViewModel<MemoSharedViewModel>()
 
-    private lateinit var adapter: MemoAdapter
+    private val adapter by lazy {
+        MemoAdapter { memoEntity ->
+            viewModel.setMemoEntity(memoEntity)
+            viewModel.setReadState()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,10 +55,6 @@ class MemoListFragment : Fragment() {
     }
 
     private fun bindViews() {
-        adapter = MemoAdapter { memoEntity ->
-            viewModel.setMemoEntity(memoEntity)
-            viewModel.setReadState()
-        }
         binding.memoListRecyclerView.layoutManager =
             LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         binding.memoListRecyclerView.adapter = adapter
@@ -63,14 +62,12 @@ class MemoListFragment : Fragment() {
 
     private fun observeData() {
         viewModel.memoListLiveData.observe(viewLifecycleOwner) {
-            (binding.memoListRecyclerView.adapter as MemoAdapter).setMemo(it)
+            adapter.submitList(it)
         }
 
         viewModel.memoStateLiveData.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is MemoState.NORMAL -> {
-                    handleNomalState()
-                }
+                is MemoState.NORMAL -> handleNormalState()
                 is MemoState.WRITE -> handleWriteState()
                 is MemoState.READ -> handleReadState()
                 is MemoState.SUCCESS -> viewModel.setNormalState()
@@ -79,7 +76,7 @@ class MemoListFragment : Fragment() {
         }
     }
 
-    private fun handleNomalState() {
+    private fun handleNormalState() {
         initView()
         bindViews()
     }
