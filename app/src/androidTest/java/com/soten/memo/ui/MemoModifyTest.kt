@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4ClassRunner::class)
-class DeleteMemoTest {
+class MemoModifyTest {
 
     @Rule
     @JvmField
@@ -51,6 +51,16 @@ class DeleteMemoTest {
                 isDisplayed()))
         appCompatEditText.perform(replaceText("title"), closeSoftKeyboard())
 
+        val appCompatEditText2 = onView(
+            allOf(withId(R.id.editMemoDescriptionText),
+                childAtPosition(
+                    childAtPosition(
+                        withId(R.id.nav_host_fragment_activity_main),
+                        0),
+                    1),
+                isDisplayed()))
+        appCompatEditText2.perform(replaceText("description"), closeSoftKeyboard())
+
         val materialButton = onView(
             allOf(withId(R.id.submitButton), withText("submit"),
                 childAtPosition(
@@ -68,25 +78,55 @@ class DeleteMemoTest {
                     0)))
         recyclerView.perform(actionOnItemAtPosition<ViewHolder>(0, click()))
 
-        val overflowMenuButton = onView(
-            allOf(withContentDescription("옵션 더보기"),
+        val actionMenuItemView = onView(
+            allOf(withId(R.id.menu_modify), withContentDescription("modify"),
                 childAtPosition(
                     childAtPosition(
                         withId(R.id.toolbar),
                         1),
-                    1),
+                    0),
                 isDisplayed()))
-        overflowMenuButton.perform(click())
+        actionMenuItemView.perform(click())
 
-        val materialTextView2 = onView(
-            allOf(withId(R.id.title), withText("delete"),
+        val appCompatEditText3 = onView(
+            allOf(withId(R.id.editMemoTitleText), withText("title"),
                 childAtPosition(
                     childAtPosition(
-                        withId(R.id.content),
+                        withId(R.id.nav_host_fragment_activity_main),
                         0),
                     0),
                 isDisplayed()))
-        materialTextView2.perform(click())
+        appCompatEditText3.perform(click())
+
+        val appCompatEditText4 = onView(
+            allOf(withId(R.id.editMemoTitleText), withText("title"),
+                childAtPosition(
+                    childAtPosition(
+                        withId(R.id.nav_host_fragment_activity_main),
+                        0),
+                    0),
+                isDisplayed()))
+        appCompatEditText4.perform(replaceText("title modify"))
+
+        val appCompatEditText5 = onView(
+            allOf(withId(R.id.editMemoTitleText), withText("title modify"),
+                childAtPosition(
+                    childAtPosition(
+                        withId(R.id.nav_host_fragment_activity_main),
+                        0),
+                    0),
+                isDisplayed()))
+        appCompatEditText5.perform(closeSoftKeyboard())
+
+        val materialButton2 = onView(
+            allOf(withId(R.id.submitButton), withText("submit"),
+                childAtPosition(
+                    childAtPosition(
+                        withId(R.id.nav_host_fragment_activity_main),
+                        0),
+                    2),
+                isDisplayed()))
+        materialButton2.perform(click())
     }
 
     private fun childAtPosition(
