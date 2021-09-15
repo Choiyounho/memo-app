@@ -115,7 +115,6 @@ class MemoEditFragment : Fragment() {
             val urlLink = bundle.getString("requestKey")
 
             binding.progressBar.visibility = View.VISIBLE
-            var path: String? = ""
 
             Glide.with(appContext!!)
                 .asBitmap()
@@ -126,7 +125,7 @@ class MemoEditFragment : Fragment() {
                         transition: Transition<in Bitmap>?,
                     ) {
                         val imageUri = getImageUri(appContext, resource)
-                        path = PathUtil.getPath(appContext!!, imageUri!!)
+                        val path = PathUtil.getPath(appContext!!, imageUri!!)
 
                         path?.let {
                             viewModel.imagePathLiveData.addImage(it)
@@ -143,8 +142,12 @@ class MemoEditFragment : Fragment() {
                         photoAdapter.setImages(viewModel.imagePathLiveData.value!!)
                     }
 
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        Toast.makeText(appContext, "url 받아오기 실패", Toast.LENGTH_SHORT).show()
+                    override fun onLoadCleared(placeholder: Drawable?) = Unit
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        super.onLoadFailed(errorDrawable)
+                        Toast.makeText(appContext, "유효하지 않는 url 입니다.", Toast.LENGTH_SHORT).show()
+                        binding.progressBar.visibility = View.GONE
                     }
                 })
         }
